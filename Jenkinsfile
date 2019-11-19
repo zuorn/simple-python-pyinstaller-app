@@ -1,5 +1,6 @@
 pipeline {
     agent none 
+    // 构建
     stages {
         stage('Build') { 
             agent {
@@ -12,4 +13,21 @@ pipeline {
             }
         }
     }
+    // 测试
+     stage('Test') {
+            agent {
+                docker {
+                    image 'qnib/pytest'
+                }
+            }
+            steps {
+                sh 'py.test --verbose --junit-xml test-reports/results.xml sources/test_calc.py'
+            }
+            post {
+                always {
+                    junit 'test-reports/results.xml'
+                }
+            }
+        }
+    
 }
